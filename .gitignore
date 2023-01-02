@@ -4,6 +4,10 @@ pom.xml.asc
 *.class
 /lib/
 /classes/
+/logs/
+/.clj-kondo/
+/.lsp/
+/.calva/
 /target/
 /checkouts/
 .lein-deps-sum
@@ -12,3 +16,4 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
+Capstanfile
