@@ -11,6 +11,7 @@
                  [org.clojure/java.jdbc "0.7.12"]
                  [mysql/mysql-connector-java "8.0.31"]
                  [email-validator "0.1"]
+                 [org.clojure/data.json "0.2.6"]
                  [ch.qos.logback/logback-classic "1.2.10" :exclusions [org.slf4j/slf4j-api]]
                  [org.slf4j/jul-to-slf4j "1.7.35"]
                  [org.slf4j/jcl-over-slf4j "1.7.35"]
