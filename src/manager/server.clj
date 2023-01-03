@@ -2,7 +2,8 @@
   (:gen-class) ; for -main method in uberjar
   (:require [io.pedestal.http :as server]
             [io.pedestal.http.route :as route]
-            [manager.service :as service]))
+            [manager.service :as service]
+            [manager.routes :as routes]))
 
 
 (defonce runnable-service (server/create-server service/service))
@@ -14,7 +15,7 @@
   (-> service/service ;; start with production configuration
       (merge {:env :dev
               ::server/join? false
-              ::server/routes #(route/expand-routes (deref #'service/routes))
+              ::server/routes #(route/expand-routes (deref #'routes/routes))
               ::server/allowed-origins {:creds true :allowed-origins (constantly true)}
               ::server/secure-headers {:content-security-policy-settings {:object-src "'none'"}}})
       server/default-interceptors
