@@ -26,6 +26,21 @@
        (catch Exception e (str "error creating new user:" (.getMessage e))))))
 
 
+(defn get-users
+ ([] 
+   (try 
+     (-> conn/connection 
+         (jdbc/query ["SELECT * FROM users"]))
+     (catch Exception e (str "error listing existing users:" (.getMessage e))))))
+
+(defn get-users-by-cpf
+  ([cpf]
+   (try
+     (-> conn/connection
+         (jdbc/query ["SELECT * FROM users WHERE client_cpf = ?" cpf]))
+     (catch Exception e (str "error listing existing user:" (.getMessage e))))))
+
+
 
 
 
