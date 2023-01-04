@@ -7,12 +7,11 @@
    (let [name (.toString (:name json-params))
          lastname (.toString (:lastname json-params))
          email (.toString (:email json-params))
-         cpf  (:cpf json-params)
+         cpf  (.toString (:cpf json-params))
          is-valid? (client-business/validate-new-user name lastname email cpf)]
      {:status (if (= is-valid? "Account created successfully!") 201 500)
       :headers {"Content-type" "text/plain"}
-      :body (str is-valid?)}
-     ))
+      :body (str is-valid?)}))
 
 (defn get-all-users
   [request]
@@ -20,13 +19,23 @@
    :headers {"Content-type" "text/json"}
    :body(client-handler/get-users)})
 
-
 (defn get-users-by-cpf 
   [request]
   (let [cpf (get-in  request [:path-params :cpf])]
     {:status (if (empty? (client-handler/get-users-by-cpf cpf)) 404 200)
      :headers {"Content-type" "text/json"}
      :body  (client-handler/get-users-by-cpf cpf)}))
+
+(defn put-users 
+  [{:keys [json-params]}]
+   (let [name (.toString (:name json-params))
+         lastname (.toString (:lastname json-params))
+         email (.toString (:email json-params))
+         cpf (.toString (:cpf json-params))
+         status (client-business/validate-update-user name lastname email cpf)]
+     {:status (if (= status "No account was found with this CPF!") 404 200)
+      :headers {"Content-type" "text/plain"}
+      :body (str status)}))
 
 
 

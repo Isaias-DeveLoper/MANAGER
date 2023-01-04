@@ -7,12 +7,13 @@
   `[[:app-name :manager
      ["/client/users/account" 
       {:post client-user/post-new-account
-       :get client-user/get-all-users}
-      ^:interceptors [(body-params/body-params) http/html-body]] 
-     ["/client/users/account/:cpf" 
-      ^:interceptors [(body-params/body-params) http/html-body] 
-      ^:constraints  {:cpf #"[0-9]+"} 
-      {:get client-user/get-users-by-cpf}]]])
+       :get client-user/get-all-users
+       :put client-user/put-users}
+      ^:interceptors [(body-params/body-params) http/html-body]
+           ["/:cpf"
+            ^:interceptors [(body-params/body-params) http/html-body]
+            ^:constraints  {:cpf #"[0-9]+"}
+            {:get client-user/get-users-by-cpf}]]]])
 
 
 
