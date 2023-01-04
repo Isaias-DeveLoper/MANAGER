@@ -28,6 +28,14 @@
     (catch Exception e (str "error find account_id:" (.getMessage e)))))
 
 
+(defn return-account-by-code
+  [account-id]
+  (try 
+    (-> conn/connection
+        (jdbc/query ["SELECT * FROM account WHERE account_id = ?" account-id]))
+    (catch Exception e (str "error in function return account-by-code :" (.getMessage e)))))
+
+
 
 
 
