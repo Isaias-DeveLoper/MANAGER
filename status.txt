@@ -1,0 +1,6 @@
+//0 - regular (the account is in perfect condition)
+//1 - outstanding debts (is when the account has pending issues.)
+//2 - account deactivated or canceled
+
+//0 - authorized
+//1 - not authorized
