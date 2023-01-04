@@ -27,18 +27,31 @@
 
 
 (defn get-users
- ([] 
+[] 
    (try 
      (-> conn/connection 
          (jdbc/query ["SELECT * FROM users"]))
-     (catch Exception e (str "error listing existing users:" (.getMessage e))))))
+     (catch Exception e (str "error listing existing users:" (.getMessage e)))))
 
 (defn get-users-by-cpf
-  ([cpf]
+ [cpf]
    (try
      (-> conn/connection
          (jdbc/query ["SELECT * FROM users WHERE client_cpf = ?" cpf]))
-     (catch Exception e (str "error listing existing user:" (.getMessage e))))))
+     (catch Exception e (str "error listing existing user:" (.getMessage e)))))
+
+
+(defn update-user!
+  [name lastname email cpf]
+   (try
+     (-> conn/connection
+         (jdbc/update! :users {:client_name name 
+                               :client_lastname lastname 
+                               :client_email email} ["client_cpf = ?" cpf]))
+     (str "user updated successfully!")
+     (catch Exception e (str "error when updating user :" (.getMessage e)))))
+
+
 
 
 

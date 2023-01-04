@@ -1,5 +1,6 @@
 (ns manager.database.schemas
-  (:require [clojure.java.jdbc :as jdbc]))
+  (:require [clojure.java.jdbc :as jdbc]
+            [manager.database.connection :as conn]))
 
 (def users-schema
   (jdbc/create-table-ddl :users
@@ -28,4 +29,34 @@
                           [:status_id :int]
                           [:deadline "timestamp"]
                           [:created_at "timestamp"]]))
+
+(def transactions-schema 
+  (jdbc/create-table-ddl :transactions 
+                         [[:id "varchar(36)"]
+                          [:account_original_id "varchar(36)"]
+                          [:account_original_status_id :int]
+                          [:account_original_type "varchar(36)"]
+                          [:account_receiver_id "varchar(36)"]
+                          [:value_sent "double"]
+                          [:transaction_status :int]
+                          [:expiration_date "timestamp"]
+                          [:responsible_institution "varchar(255)"]
+                          [:reason_for_transaction "longtext"]
+                          [:completion_date "timestamp"]]))
+
+(def historic-account-schema
+  (jdbc/create-table-ddl :historic_account 
+                         [[:id "varchar(36)"]
+                          [:account_id "varchar(36)"]
+                          [:client_id "varchar(36)"]
+                          [:balance "double"]
+                          [:status_account :int]
+                          [:last_date "timestamp"]]))
+
+(jdbc/db-do-commands conn/connection [transactions-schema
+                                      "CREATE INDEX id_ix ON transactions ( id ); "])
+
+
+
+
 
