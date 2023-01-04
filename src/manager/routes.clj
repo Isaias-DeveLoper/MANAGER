@@ -2,7 +2,8 @@
   (:require [io.pedestal.http.body-params :as body-params]
             [io.pedestal.http :as http]
             [manager.http.client-http :as user-http]
-            [manager.http.account-http :as account-http]))
+            [manager.http.account-http :as account-http]
+            [manager.http.transact-http :as transact-http]))
 
 (def routes 
   `[[:app-name :manager
@@ -22,7 +23,10 @@
        ["/:cpf" 
          {:get account-http/get-account-by-cpf}
         ^:interceptors [(body-params/body-params) http/html-body]
-        ^:constraints  {:cpf #"[0-9]+"}]]]]])
+        ^:constraints  {:cpf #"[0-9]+"}]]
+      ["/transact"
+       {:post transact-http/new-transaction}
+       ^:interceptors [(body-params/body-params) http/html-body]]]]])
 
 
 

@@ -37,6 +37,7 @@
                           [:account_original_status_id :int]
                           [:account_original_type "varchar(36)"]
                           [:account_receiver_id "varchar(36)"]
+                          [:action "varchar(50)"]
                           [:value_sent "double"]
                           [:transaction_status :int]
                           [:expiration_date "timestamp"]
@@ -48,13 +49,10 @@
   (jdbc/create-table-ddl :historic_account 
                          [[:id "varchar(36)"]
                           [:account_id "varchar(36)"]
-                          [:client_id "varchar(36)"]
                           [:balance "double"]
                           [:status_account :int]
                           [:last_date "timestamp"]]))
 
-(jdbc/db-do-commands conn/connection [transactions-schema
-                                      "CREATE INDEX id_ix ON transactions ( id ); "])
 
 
 
