@@ -5,7 +5,7 @@
             [manager.handlers.transaction-service-handler :as transact])
   (:import (java.util Date UUID)))
 
-(declare pending-exists check-balance-available authorized-transaction unauthorized-transaction return-type-account)
+(declare pending-exists check-balance-available authorized-transaction unauthorized-transaction return-type-account check-exists-transact)
 
 (defn transact
   [cpf receive value_send reason]
@@ -128,6 +128,71 @@
                                   :last_date (new Date)}])))
     (str "successful transaction!")
     (catch Exception e (str "error function authorized:" (.getMessage e)))))
+
+(defn reverse-transaction
+  [id-transaction reason]
+   (try 
+     (if (empty? (check-exists-transact id-transaction))
+       (str "non-existent transaction, please enter an existing identifier")
+       (let [account-original (apply str (-> conn/connection
+                                             (jdbc/query ["SELECT account_original_id FROM transactions WHERE id = ?" id-transaction]
+                                                         {:row-fn :account_original_id})))
+             account-receive (apply str (-> conn/connection
+                                            (jdbc/query ["SELECT account_receiver_id FROM transactions WHERE id = ?" id-transaction]
+                                                        {:row-fn :account_receiver_id})))
+             transacted-value (apply double (-> conn/connection
+                                                (jdbc/query ["SELECT value_sent FROM transactions WHERE id = ?" id-transaction]
+                                                            {:row-fn :value_sent})))
+             account-original-balance-update (add-value (apply double (return-balance account-original)) transacted-value)
+             account-receive-balance-update (subtract-value (apply double (return-balance account-receive)) transacted-value)
+             type-account-original (apply str (return-type-account account-receive))]
+         (jdbc/with-db-transaction [t-con conn/connection]
+           (jdbc/insert! t-con :transactions {:id (.toString (UUID/randomUUID))
+                                              :account_original_id account-receive
+                                              :account_original_status_id 0
+                                              :account_original_type type-account-original
+                                              :account_receiver_id account-original
+                                              :action "reversal"
+                                              :value_sent transacted-value
+                                              :transaction_status 0
+                                              :expiration_date (new Date)
+                                              :responsible_institution "MANAGER_SERVICES"
+                                              :reason_for_transaction reason
+                                              :completion_date (new Date)})
+           (jdbc/update! t-con :account {:account_limit account-original-balance-update}
+                         ["account_id = ?" account-original])
+           (jdbc/update! t-con :account {:account_limit account-receive-balance-update}
+                         ["account_id = ?" account-receive])
+           (jdbc/insert-multi! t-con :historic_account
+                               [{:id (.toString (UUID/randomUUID))
+                                 :account_id account-original
+                                 :balance account-original-balance-update
+                                 :status_account 0
+                                 :last_date (new Date)}
+                                {:id (.toString (UUID/randomUUID))
+                                 :account_id account-receive
+                                 :balance account-receive-balance-update
+                                 :status_account 0
+                                 :last_date (new Date)}])))) 
+     (catch Exception e (str "error in function reverse-transaction:" (.getMessage e)))))
+
+(defn check-exists-transact 
+  [id-transaction]
+   (try 
+    (-> conn/connection
+        (jdbc/query ["SELECT * FROM transactions WHERE id = ?" id-transaction]))
+     (catch Exception e (str "error in function check-exists-transact:"(.getMessage e)))))
+
+
+
+
+
+
+
+
+
+
+
 
 
 

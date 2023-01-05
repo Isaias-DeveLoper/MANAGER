@@ -7,7 +7,7 @@
 
 (def routes 
   `[[:app-name :manager
-     ["/api/services" 
+     ["/api/v1/services" 
       ["/users" 
        {:post user-http/post-new-account 
         :get user-http/get-all-users 
@@ -24,8 +24,11 @@
          {:get account-http/get-account-by-cpf}
         ^:interceptors [(body-params/body-params) http/html-body]
         ^:constraints  {:cpf #"[0-9]+"}]]
-      ["/transact"
+      ["/transact/new"
        {:post transact-http/new-transaction}
+       ^:interceptors [(body-params/body-params) http/html-body]]
+      ["/transact/reversal"
+       {:post transact-http/reverse-transaction-account}
        ^:interceptors [(body-params/body-params) http/html-body]]]]])
 
 
