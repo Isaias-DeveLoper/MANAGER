@@ -14,5 +14,17 @@
       :headers {"Content-type" "text/plain"}
       :body (str status)}))
 
+(defn reverse-transaction-account
+  [{:keys [json-params]}]
+   (let [cpf (:cpf json-params)
+         transact-id (:transaction json-params)
+         reason (:reason_reversal json-params)
+         status (transact-business/check-owner-transaction cpf transact-id reason)]
+     {:status (if (not (= status "non-existent user!")) 200 404)
+      :headers {"Content-type" "text/plain"}
+      :body (if (nil? status)
+              (str "reversal performed successfully!")
+              (str status))}))
+
 
 

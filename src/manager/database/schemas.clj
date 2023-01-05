@@ -10,7 +10,8 @@
                           [:client_email "varchar(100) NOT NULL"]
                           [:client_cpf "varchar(11) NOT NULL"]
                           [:client_account_id "varchar(36)"]
-                          [:created_at "timestamp"]]))
+                          [:created_at "timestamp"]
+                          [:deleted_at "timestamp"]]))
 
 (def account-schema
   (jdbc/create-table-ddl :account
@@ -19,7 +20,8 @@
                           [:type_account "varchar(20)"]
                           [:account_limit "double"]
                           [:account_status_id :int]
-                          [:created_at "timestamp"]]))
+                          [:created_at "timestamp"]
+                          [:deleted_at "timestamp"]]))
 
 (def debts-schema
   (jdbc/create-table-ddl :debts
