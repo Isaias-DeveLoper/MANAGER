@@ -2,7 +2,8 @@
   (:require [clojure.java.jdbc :as jdbc]
             [manager.database.connection :as conn]
             [manager.handlers.account-service-handler :as account-handler]
-            [manager.handlers.transaction-service-handler :as transact])
+            [manager.handlers.transaction-service-handler :as transact] 
+            [java-time.api :as j])
   (:import (java.util Date UUID)))
 
 (declare pending-exists check-balance-available authorized-transaction unauthorized-transaction return-type-account check-exists-transact)
@@ -100,17 +101,17 @@
           reason-transact (.toString reason)]
       (jdbc/with-db-transaction [t-con conn/connection]
             (jdbc/insert! t-con :transactions {:id (.toString (UUID/randomUUID))
-                                         :account_original_id account-original
-                                         :account_original_status_id 0
-                                         :account_original_type type-account
-                                         :account_receiver_id receive-transact
-                                         :action "authorized"
-                                         :value_sent value_send
-                                         :transaction_status 0 
-                                         :expiration_date (new Date)
-                                         :responsible_institution "MANAGER_SERVICES"
-                                         :reason_for_transaction reason-transact
-                                         :completion_date (new Date)})
+                                               :account_original_id account-original
+                                               :account_original_status_id 0
+                                               :account_original_type type-account
+                                               :account_receiver_id receive-transact
+                                               :action "authorized"
+                                               :value_sent value_send
+                                               :transaction_status 0 
+                                               :expiration_date (j/plus (j/local-date) (j/days 3))
+                                               :responsible_institution "MANAGER_SERVICES"
+                                               :reason_for_transaction reason-transact
+                                               :completion_date (new Date)})
             (jdbc/update! t-con :account {:account_limit new-balance-original}
                           ["account_id = ?" account-original])
             (jdbc/update! t-con :account {:account_limit new-balance-receive}
@@ -155,7 +156,7 @@
                                               :action "reversal"
                                               :value_sent transacted-value
                                               :transaction_status 0
-                                              :expiration_date (new Date)
+                                              :expiration_date (j/plus (j/local-date) (j/days 3))
                                               :responsible_institution "MANAGER_SERVICES"
                                               :reason_for_transaction reason
                                               :completion_date (new Date)})
@@ -182,18 +183,4 @@
     (-> conn/connection
         (jdbc/query ["SELECT * FROM transactions WHERE id = ?" id-transaction]))
      (catch Exception e (str "error in function check-exists-transact:"(.getMessage e)))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
