@@ -11,8 +11,10 @@
      {:status (if (not (= status "account not found"))
                 (if (= status "successful transaction!") 200 401)
                 404)
-      :headers {"Content-type" "text/plain"}
-      :body (str status)}))
+      :headers {"Content-Type" "application/json"}
+      :body (if (= status "successful transaction!")
+              {:message "successfully transaction!"}
+              {:message "Error!"})}))
 
 (defn reverse-transaction-account
   [{:keys [json-params]}]
@@ -21,10 +23,11 @@
          reason (:reason_reversal json-params)
          status (transact-business/check-owner-transaction cpf transact-id reason)]
      {:status (if (not (= status "non-existent user!")) 200 404)
-      :headers {"Content-type" "text/plain"}
+      :headers {"Content-Type" "application/json"}
       :body (if (nil? status)
-              (str "reversal performed successfully!")
-              (str status))}))
+              {:message "error"}
+              {:message "reversal performed successfully!"})}))
+
 
 
 
