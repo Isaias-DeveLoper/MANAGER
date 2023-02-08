@@ -11,7 +11,9 @@
          cpf  (.toString (:cpf json-params))
          is-valid? (client-business/validate-new-user name lastname email cpf)]
      {:status (if (= is-valid? "Account created successfully!") 201 500)
-      :body (str is-valid?)
+      :body (if (= is-valid? "Account created successfully!")
+              {:message "User created successfully!"}
+              {:message "Error!"})
       :headers {"Content-Type" "application/json"}}))
 
 (defn get-all-users
