@@ -1,45 +1,108 @@
-# template
+# SIMPLE API REST WITH CLOJURE AND MYSQL USING PEDESTAL
 
 FIXME
 
-## Getting Started
+## Endpoints
 
-1. Start the application: `lein run`
-2. Go to [localhost:8080](http://localhost:8080/) to see: `Hello World!`
-3. Read your app's source code at src/template/service.clj. Explore the docs of functions
-   that define routes and responses.
-4. Run your app's tests with `lein test`. Read the tests at test/template/service_test.clj.
-5. Learn more! See the [Links section below](#links).
+1. GET :
+
+ * /api/v1/services/users - list registered users
+ * /api/v1/services/:cpf - list registered users by cpf
+
+  response -
+ [
+   	{
+		"id": "3467c9ed-e931-4d31-9093-54ba0a1169eb",
+		"client_name": "Marcos",
+		"client_lastname": "Pereira",
+		"client_email": "marcos@gmail.com",
+		"client_cpf": "67656234512",
+		"client_account_id": "9f78eda5-15c8-442c-8e28-ceb39f6dcb8b",
+		"created_at": "2023-01-03T02:39:38Z",
+		"deleted_at": null
+	}
+ ]
+ * /api/v1/services/accounts - list registered accounts 
+ * /api/v1/services/accounts/:cpf - list registered accounts by cpf
+
+response - 
+[
+   	{
+		"id": "29518edf-e795-4cc7-a9fe-3c8ee89d58a8",
+		"account_id": "9f78eda5-15c8-442c-8e28-ceb39f6dcb8b",
+		"type_account": "debit",
+		"account_limit": 7220.0,
+		"account_status_id": 0,
+		"created_at": "2023-01-03T02:39:38Z",
+		"deleted_at": null
+	}
+] 
+
+2. POST :
+
+* /api/v1/services/users - endpoint for creating new users
+
+{"name":"Isaias",
+ "lastname":"Vasconcelos",
+ "email":"isaiaskeyboards@gmail.com",
+ "cpf":"908888888888"}
+
+Case success -
+{
+   "message":"User created successfully!"
+}
+Case error -
+{
+   "message":"Error!"
+}
+
+*The script will generate the id which is in UUID format and your account id
+*An account will be generated from this informed data.
+
+* /api/v1/services/transact/new - this endpoint is responsible for sending money from one account to another in a very simple way.
+
+{
+ "cpf": "67656234512",
+ "destinatary":"e391a8d2-bcbc-4528-8627-e0211c91622b",
+ "value":520,
+ "reason" :"gift"}
+
+cpf - from who is sending , from your cpf we will identify your account.
+destinatary - the id of the account that will receive the amount.
+value - value to send.
+reason - reason for transaction.
+
+Case success -
+{
+   "message":"successfully transaction!"
+}
+Case error -
+{
+   "message":"Error!"
+}
+
+*by doing this you will be sending a certain value from your account to another account.
+a more complete record of your transaction will be generated with all the information of that transaction if it was approved or denied among others...
+ 
+*api/v1/services/transact/reversal - this endpoint is responsible for reversing the transactions or reversal call in the financial market in case of any problem.
+
+{"cpf":"67656234512",
+ "transaction":"159744cc-c0cf-45f6-8f20-8e678272b11f",
+ "reason_reversal":"value send error"}
+
+cpf - check if you are one of the users who participated in the transaction.
+transaction - receives the id of the transaction to be reversed.
+reason_reversal - the reason for the reversal.
+
+Case success  - 
+{
+	"message": "reversal performed successfully!"
+} 
+
+Case error -
+{
+   "message": "Error!"
+}
 
 
-## Configuration
-
-To configure logging see config/logback.xml. By default, the app logs to stdout and logs/.
-To learn more about configuring Logback, read its [documentation](http://logback.qos.ch/documentation.html).
-
-
-## Developing your service
-
-1. Start a new REPL: `lein repl`
-2. Start your service in dev-mode: `(def dev-serv (run-dev))`
-3. Connect your editor to the running REPL session.
-   Re-evaluated code will be seen immediately in the service.
-
-### [Docker](https://www.docker.com/) container support
-
-1. Configure your service to accept incoming connections (edit service.clj and add  ::http/host "0.0.0.0" )
-2. Build an uberjar of your service: `lein uberjar`
-3. Build a Docker image: `sudo docker build -t template .`
-4. Run your Docker image: `docker run -p 8080:8080 template`
-
-### [OSv](http://osv.io/) unikernel support with [Capstan](http://osv.io/capstan/)
-
-1. Build and run your image: `capstan run -f "8080:8080"`
-
-Once the image it built, it's cached.  To delete the image and build a new one:
-
-1. `capstan rmi template; capstan build`
-
-
-## Links
-* [Other Pedestal examples](http://pedestal.io/samples)
+This was a basic example of a rest api developed in clojure for Study.
